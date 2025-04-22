@@ -1,0 +1,21 @@
+# config.yaml
+
+#Target dir
+location: "/data/data-transfer_KCRB/2025-04-15_HT27-2025-04-11_Run1"
+
+#sample prep
+prep:
+  nsample: 10000
+  nblocks: 10
+
+#Runs to analyze
+samples:
+  - Chip1
+  - Chip2
+
+#Alignment parameters
+alignment:
+  cutoff: 0.90
+  reference: "Inputs/T3_4-Rev.fasta"
+  align: "Scripts/align.py"
+  
