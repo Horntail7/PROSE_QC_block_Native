@@ -1,0 +1,425 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 40
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	7	aggregate_data_summary
+	1	all
+	8
+Resources before job selection: {'_cores': 40, '_nodes': 9223372036854775807}
+Ready jobs (7):
+	aggregate_data_summary
+	aggregate_data_summary
+	aggregate_data_summary
+	aggregate_data_summary
+	aggregate_data_summary
+	aggregate_data_summary
+	aggregate_data_summary
+Selected jobs (7):
+	aggregate_data_summary
+	aggregate_data_summary
+	aggregate_data_summary
+	aggregate_data_summary
+	aggregate_data_summary
+	aggregate_data_summary
+	aggregate_data_summary
+Resources after job selection: {'_cores': 33, '_nodes': 9223372036854775800}
+
+[Tue Apr 22 16:01:00 2025]
+rule aggregate_data_summary:
+    input: results/Chip2/barcode29/0/non_sequential_summary.csv, results/Chip2/barcode29/1/non_sequential_summary.csv, results/Chip2/barcode29/2/non_sequential_summary.csv, results/Chip2/barcode29/3/non_sequential_summary.csv, results/Chip2/barcode29/4/non_sequential_summary.csv, results/Chip2/barcode29/5/non_sequential_summary.csv, results/Chip2/barcode29/6/non_sequential_summary.csv, results/Chip2/barcode29/7/non_sequential_summary.csv, results/Chip2/barcode29/8/non_sequential_summary.csv, results/Chip2/barcode29/9/non_sequential_summary.csv, results/Chip2/barcode29/0/sequential_summary.csv, results/Chip2/barcode29/1/sequential_summary.csv, results/Chip2/barcode29/2/sequential_summary.csv, results/Chip2/barcode29/3/sequential_summary.csv, results/Chip2/barcode29/4/sequential_summary.csv, results/Chip2/barcode29/5/sequential_summary.csv, results/Chip2/barcode29/6/sequential_summary.csv, results/Chip2/barcode29/7/sequential_summary.csv, results/Chip2/barcode29/8/sequential_summary.csv, results/Chip2/barcode29/9/sequential_summary.csv
+    output: AGGRE/Chip2/barcode29/non_sequential_summary.csv, AGGRE/Chip2/barcode29/sequential_summary.csv
+    jobid: 214
+    wildcards: chip=Chip2, native=barcode29
+
+
+    	echo "Seq,Read_count,Percentage" > AGGRE/Chip2/barcode29/non_sequential_summary.csv
+    	echo "Seq,Read_count,Percentage" > AGGRE/Chip2/barcode29/sequential_summary.csv
+
+    	total=0
+    	for f in results/Chip2/barcode29/0/sequential_summary.csv results/Chip2/barcode29/1/sequential_summary.csv results/Chip2/barcode29/2/sequential_summary.csv results/Chip2/barcode29/3/sequential_summary.csv results/Chip2/barcode29/4/sequential_summary.csv results/Chip2/barcode29/5/sequential_summary.csv results/Chip2/barcode29/6/sequential_summary.csv results/Chip2/barcode29/7/sequential_summary.csv results/Chip2/barcode29/8/sequential_summary.csv results/Chip2/barcode29/9/sequential_summary.csv; do
+            c=$(grep Total "$f" | sed "s|,| |g" | awk '{print $1}')
+	    echo $f $c
+            total=$(echo $total $c | awk '{print $1+$2}')
+    	done
+
+    	nlen=0
+    	for f in results/Chip2/barcode29/0/non_sequential_summary.csv results/Chip2/barcode29/1/non_sequential_summary.csv results/Chip2/barcode29/2/non_sequential_summary.csv results/Chip2/barcode29/3/non_sequential_summary.csv results/Chip2/barcode29/4/non_sequential_summary.csv results/Chip2/barcode29/5/non_sequential_summary.csv results/Chip2/barcode29/6/non_sequential_summary.csv results/Chip2/barcode29/7/non_sequential_summary.csv results/Chip2/barcode29/8/non_sequential_summary.csv results/Chip2/barcode29/9/non_sequential_summary.csv; do
+            c=$(grep Reads_not_meeting_length_criteria "$f" | sed "s|,| |g" | awk '{print $1}')
+            nlen=$(echo $nlen $c | awk '{print $1+$2}')
+    	done
+
+    	nunmatched=0
+    	for f in results/Chip2/barcode29/0/non_sequential_summary.csv results/Chip2/barcode29/1/non_sequential_summary.csv results/Chip2/barcode29/2/non_sequential_summary.csv results/Chip2/barcode29/3/non_sequential_summary.csv results/Chip2/barcode29/4/non_sequential_summary.csv results/Chip2/barcode29/5/non_sequential_summary.csv results/Chip2/barcode29/6/non_sequential_summary.csv results/Chip2/barcode29/7/non_sequential_summary.csv results/Chip2/barcode29/8/non_sequential_summary.csv results/Chip2/barcode29/9/non_sequential_summary.csv; do
+            c=$(grep Reads_unmatched "$f" | sed "s|,| |g" | awk '{print $1}')
+            nunmatched=$(echo $nunmatched $c | awk '{print $1+$2}')
+    	done
+
+    	for temp in $(grep '^>' Inputs/T3_4-Rev.fasta | sed 's/>//' ); do
+            count=0
+            for f in results/Chip2/barcode29/0/non_sequential_summary.csv results/Chip2/barcode29/1/non_sequential_summary.csv results/Chip2/barcode29/2/non_sequential_summary.csv results/Chip2/barcode29/3/non_sequential_summary.csv results/Chip2/barcode29/4/non_sequential_summary.csv results/Chip2/barcode29/5/non_sequential_summary.csv results/Chip2/barcode29/6/non_sequential_summary.csv results/Chip2/barcode29/7/non_sequential_summary.csv results/Chip2/barcode29/8/non_sequential_summary.csv results/Chip2/barcode29/9/non_sequential_summary.csv; do
+            	c=$(grep "$temp" "$f" | sed "s|,| |g" | awk '{print $1}')
+            	count=$(echo $count $c | awk '{print $1+$2}')
+            done
+            printf "%s,%d,%6.2f\n" "$temp" "$count" "$(awk -v a=$count -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip2/barcode29/non_sequential_summary.csv
+
+            count=0
+            for f in results/Chip2/barcode29/0/sequential_summary.csv results/Chip2/barcode29/1/sequential_summary.csv results/Chip2/barcode29/2/sequential_summary.csv results/Chip2/barcode29/3/sequential_summary.csv results/Chip2/barcode29/4/sequential_summary.csv results/Chip2/barcode29/5/sequential_summary.csv results/Chip2/barcode29/6/sequential_summary.csv results/Chip2/barcode29/7/sequential_summary.csv results/Chip2/barcode29/8/sequential_summary.csv results/Chip2/barcode29/9/sequential_summary.csv; do
+            	c=$(grep "$temp" "$f" | sed "s|,| |g" | awk '{print $1}')
+            	count=$(echo $count $c | awk '{print $1+$2}')
+            done
+            printf "%s,%d,%6.2f\n" "$temp" "$count" "$(awk -v a=$count -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip2/barcode29/sequential_summary.csv
+        done
+
+    	printf "Reads_not_meeting_length_criteria,%d,%6.2f\n" "$nlen" "$(awk -v a=$nlen -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip2/barcode29/non_sequential_summary.csv
+    	printf "Reads_unmatched,%d,%6.2f\n" "$nunmatched" "$(awk -v a=$nunmatched -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip2/barcode29/non_sequential_summary.csv
+    	printf "Total,%d,100.00\n" "$total" >> AGGRE/Chip2/barcode29/sequential_summary.csv
+   	
+
+[Tue Apr 22 16:01:00 2025]
+rule aggregate_data_summary:
+    input: results/Chip2/barcode28/0/non_sequential_summary.csv, results/Chip2/barcode28/1/non_sequential_summary.csv, results/Chip2/barcode28/2/non_sequential_summary.csv, results/Chip2/barcode28/3/non_sequential_summary.csv, results/Chip2/barcode28/4/non_sequential_summary.csv, results/Chip2/barcode28/5/non_sequential_summary.csv, results/Chip2/barcode28/6/non_sequential_summary.csv, results/Chip2/barcode28/7/non_sequential_summary.csv, results/Chip2/barcode28/8/non_sequential_summary.csv, results/Chip2/barcode28/9/non_sequential_summary.csv, results/Chip2/barcode28/0/sequential_summary.csv, results/Chip2/barcode28/1/sequential_summary.csv, results/Chip2/barcode28/2/sequential_summary.csv, results/Chip2/barcode28/3/sequential_summary.csv, results/Chip2/barcode28/4/sequential_summary.csv, results/Chip2/barcode28/5/sequential_summary.csv, results/Chip2/barcode28/6/sequential_summary.csv, results/Chip2/barcode28/7/sequential_summary.csv, results/Chip2/barcode28/8/sequential_summary.csv, results/Chip2/barcode28/9/sequential_summary.csv
+    output: AGGRE/Chip2/barcode28/non_sequential_summary.csv, AGGRE/Chip2/barcode28/sequential_summary.csv
+    jobid: 217
+    wildcards: chip=Chip2, native=barcode28
+
+
+    	echo "Seq,Read_count,Percentage" > AGGRE/Chip2/barcode28/non_sequential_summary.csv
+    	echo "Seq,Read_count,Percentage" > AGGRE/Chip2/barcode28/sequential_summary.csv
+
+    	total=0
+    	for f in results/Chip2/barcode28/0/sequential_summary.csv results/Chip2/barcode28/1/sequential_summary.csv results/Chip2/barcode28/2/sequential_summary.csv results/Chip2/barcode28/3/sequential_summary.csv results/Chip2/barcode28/4/sequential_summary.csv results/Chip2/barcode28/5/sequential_summary.csv results/Chip2/barcode28/6/sequential_summary.csv results/Chip2/barcode28/7/sequential_summary.csv results/Chip2/barcode28/8/sequential_summary.csv results/Chip2/barcode28/9/sequential_summary.csv; do
+            c=$(grep Total "$f" | sed "s|,| |g" | awk '{print $1}')
+	    echo $f $c
+            total=$(echo $total $c | awk '{print $1+$2}')
+    	done
+
+    	nlen=0
+    	for f in results/Chip2/barcode28/0/non_sequential_summary.csv results/Chip2/barcode28/1/non_sequential_summary.csv results/Chip2/barcode28/2/non_sequential_summary.csv results/Chip2/barcode28/3/non_sequential_summary.csv results/Chip2/barcode28/4/non_sequential_summary.csv results/Chip2/barcode28/5/non_sequential_summary.csv results/Chip2/barcode28/6/non_sequential_summary.csv results/Chip2/barcode28/7/non_sequential_summary.csv results/Chip2/barcode28/8/non_sequential_summary.csv results/Chip2/barcode28/9/non_sequential_summary.csv; do
+            c=$(grep Reads_not_meeting_length_criteria "$f" | sed "s|,| |g" | awk '{print $1}')
+            nlen=$(echo $nlen $c | awk '{print $1+$2}')
+    	done
+
+    	nunmatched=0
+    	for f in results/Chip2/barcode28/0/non_sequential_summary.csv results/Chip2/barcode28/1/non_sequential_summary.csv results/Chip2/barcode28/2/non_sequential_summary.csv results/Chip2/barcode28/3/non_sequential_summary.csv results/Chip2/barcode28/4/non_sequential_summary.csv results/Chip2/barcode28/5/non_sequential_summary.csv results/Chip2/barcode28/6/non_sequential_summary.csv results/Chip2/barcode28/7/non_sequential_summary.csv results/Chip2/barcode28/8/non_sequential_summary.csv results/Chip2/barcode28/9/non_sequential_summary.csv; do
+            c=$(grep Reads_unmatched "$f" | sed "s|,| |g" | awk '{print $1}')
+            nunmatched=$(echo $nunmatched $c | awk '{print $1+$2}')
+    	done
+
+    	for temp in $(grep '^>' Inputs/T3_4-Rev.fasta | sed 's/>//' ); do
+            count=0
+            for f in results/Chip2/barcode28/0/non_sequential_summary.csv results/Chip2/barcode28/1/non_sequential_summary.csv results/Chip2/barcode28/2/non_sequential_summary.csv results/Chip2/barcode28/3/non_sequential_summary.csv results/Chip2/barcode28/4/non_sequential_summary.csv results/Chip2/barcode28/5/non_sequential_summary.csv results/Chip2/barcode28/6/non_sequential_summary.csv results/Chip2/barcode28/7/non_sequential_summary.csv results/Chip2/barcode28/8/non_sequential_summary.csv results/Chip2/barcode28/9/non_sequential_summary.csv; do
+            	c=$(grep "$temp" "$f" | sed "s|,| |g" | awk '{print $1}')
+            	count=$(echo $count $c | awk '{print $1+$2}')
+            done
+            printf "%s,%d,%6.2f\n" "$temp" "$count" "$(awk -v a=$count -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip2/barcode28/non_sequential_summary.csv
+
+            count=0
+            for f in results/Chip2/barcode28/0/sequential_summary.csv results/Chip2/barcode28/1/sequential_summary.csv results/Chip2/barcode28/2/sequential_summary.csv results/Chip2/barcode28/3/sequential_summary.csv results/Chip2/barcode28/4/sequential_summary.csv results/Chip2/barcode28/5/sequential_summary.csv results/Chip2/barcode28/6/sequential_summary.csv results/Chip2/barcode28/7/sequential_summary.csv results/Chip2/barcode28/8/sequential_summary.csv results/Chip2/barcode28/9/sequential_summary.csv; do
+            	c=$(grep "$temp" "$f" | sed "s|,| |g" | awk '{print $1}')
+            	count=$(echo $count $c | awk '{print $1+$2}')
+            done
+            printf "%s,%d,%6.2f\n" "$temp" "$count" "$(awk -v a=$count -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip2/barcode28/sequential_summary.csv
+        done
+
+    	printf "Reads_not_meeting_length_criteria,%d,%6.2f\n" "$nlen" "$(awk -v a=$nlen -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip2/barcode28/non_sequential_summary.csv
+    	printf "Reads_unmatched,%d,%6.2f\n" "$nunmatched" "$(awk -v a=$nunmatched -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip2/barcode28/non_sequential_summary.csv
+    	printf "Total,%d,100.00\n" "$total" >> AGGRE/Chip2/barcode28/sequential_summary.csv
+   	
+
+[Tue Apr 22 16:01:00 2025]
+rule aggregate_data_summary:
+    input: results/Chip1/barcode31/0/non_sequential_summary.csv, results/Chip1/barcode31/1/non_sequential_summary.csv, results/Chip1/barcode31/2/non_sequential_summary.csv, results/Chip1/barcode31/3/non_sequential_summary.csv, results/Chip1/barcode31/4/non_sequential_summary.csv, results/Chip1/barcode31/5/non_sequential_summary.csv, results/Chip1/barcode31/6/non_sequential_summary.csv, results/Chip1/barcode31/7/non_sequential_summary.csv, results/Chip1/barcode31/8/non_sequential_summary.csv, results/Chip1/barcode31/9/non_sequential_summary.csv, results/Chip1/barcode31/0/sequential_summary.csv, results/Chip1/barcode31/1/sequential_summary.csv, results/Chip1/barcode31/2/sequential_summary.csv, results/Chip1/barcode31/3/sequential_summary.csv, results/Chip1/barcode31/4/sequential_summary.csv, results/Chip1/barcode31/5/sequential_summary.csv, results/Chip1/barcode31/6/sequential_summary.csv, results/Chip1/barcode31/7/sequential_summary.csv, results/Chip1/barcode31/8/sequential_summary.csv, results/Chip1/barcode31/9/sequential_summary.csv
+    output: AGGRE/Chip1/barcode31/non_sequential_summary.csv, AGGRE/Chip1/barcode31/sequential_summary.csv
+    jobid: 212
+    wildcards: chip=Chip1, native=barcode31
+
+
+    	echo "Seq,Read_count,Percentage" > AGGRE/Chip1/barcode31/non_sequential_summary.csv
+    	echo "Seq,Read_count,Percentage" > AGGRE/Chip1/barcode31/sequential_summary.csv
+
+    	total=0
+    	for f in results/Chip1/barcode31/0/sequential_summary.csv results/Chip1/barcode31/1/sequential_summary.csv results/Chip1/barcode31/2/sequential_summary.csv results/Chip1/barcode31/3/sequential_summary.csv results/Chip1/barcode31/4/sequential_summary.csv results/Chip1/barcode31/5/sequential_summary.csv results/Chip1/barcode31/6/sequential_summary.csv results/Chip1/barcode31/7/sequential_summary.csv results/Chip1/barcode31/8/sequential_summary.csv results/Chip1/barcode31/9/sequential_summary.csv; do
+            c=$(grep Total "$f" | sed "s|,| |g" | awk '{print $1}')
+	    echo $f $c
+            total=$(echo $total $c | awk '{print $1+$2}')
+    	done
+
+    	nlen=0
+    	for f in results/Chip1/barcode31/0/non_sequential_summary.csv results/Chip1/barcode31/1/non_sequential_summary.csv results/Chip1/barcode31/2/non_sequential_summary.csv results/Chip1/barcode31/3/non_sequential_summary.csv results/Chip1/barcode31/4/non_sequential_summary.csv results/Chip1/barcode31/5/non_sequential_summary.csv results/Chip1/barcode31/6/non_sequential_summary.csv results/Chip1/barcode31/7/non_sequential_summary.csv results/Chip1/barcode31/8/non_sequential_summary.csv results/Chip1/barcode31/9/non_sequential_summary.csv; do
+            c=$(grep Reads_not_meeting_length_criteria "$f" | sed "s|,| |g" | awk '{print $1}')
+            nlen=$(echo $nlen $c | awk '{print $1+$2}')
+    	done
+
+    	nunmatched=0
+    	for f in results/Chip1/barcode31/0/non_sequential_summary.csv results/Chip1/barcode31/1/non_sequential_summary.csv results/Chip1/barcode31/2/non_sequential_summary.csv results/Chip1/barcode31/3/non_sequential_summary.csv results/Chip1/barcode31/4/non_sequential_summary.csv results/Chip1/barcode31/5/non_sequential_summary.csv results/Chip1/barcode31/6/non_sequential_summary.csv results/Chip1/barcode31/7/non_sequential_summary.csv results/Chip1/barcode31/8/non_sequential_summary.csv results/Chip1/barcode31/9/non_sequential_summary.csv; do
+            c=$(grep Reads_unmatched "$f" | sed "s|,| |g" | awk '{print $1}')
+            nunmatched=$(echo $nunmatched $c | awk '{print $1+$2}')
+    	done
+
+    	for temp in $(grep '^>' Inputs/T3_4-Rev.fasta | sed 's/>//' ); do
+            count=0
+            for f in results/Chip1/barcode31/0/non_sequential_summary.csv results/Chip1/barcode31/1/non_sequential_summary.csv results/Chip1/barcode31/2/non_sequential_summary.csv results/Chip1/barcode31/3/non_sequential_summary.csv results/Chip1/barcode31/4/non_sequential_summary.csv results/Chip1/barcode31/5/non_sequential_summary.csv results/Chip1/barcode31/6/non_sequential_summary.csv results/Chip1/barcode31/7/non_sequential_summary.csv results/Chip1/barcode31/8/non_sequential_summary.csv results/Chip1/barcode31/9/non_sequential_summary.csv; do
+            	c=$(grep "$temp" "$f" | sed "s|,| |g" | awk '{print $1}')
+            	count=$(echo $count $c | awk '{print $1+$2}')
+            done
+            printf "%s,%d,%6.2f\n" "$temp" "$count" "$(awk -v a=$count -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip1/barcode31/non_sequential_summary.csv
+
+            count=0
+            for f in results/Chip1/barcode31/0/sequential_summary.csv results/Chip1/barcode31/1/sequential_summary.csv results/Chip1/barcode31/2/sequential_summary.csv results/Chip1/barcode31/3/sequential_summary.csv results/Chip1/barcode31/4/sequential_summary.csv results/Chip1/barcode31/5/sequential_summary.csv results/Chip1/barcode31/6/sequential_summary.csv results/Chip1/barcode31/7/sequential_summary.csv results/Chip1/barcode31/8/sequential_summary.csv results/Chip1/barcode31/9/sequential_summary.csv; do
+            	c=$(grep "$temp" "$f" | sed "s|,| |g" | awk '{print $1}')
+            	count=$(echo $count $c | awk '{print $1+$2}')
+            done
+            printf "%s,%d,%6.2f\n" "$temp" "$count" "$(awk -v a=$count -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip1/barcode31/sequential_summary.csv
+        done
+
+    	printf "Reads_not_meeting_length_criteria,%d,%6.2f\n" "$nlen" "$(awk -v a=$nlen -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip1/barcode31/non_sequential_summary.csv
+    	printf "Reads_unmatched,%d,%6.2f\n" "$nunmatched" "$(awk -v a=$nunmatched -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip1/barcode31/non_sequential_summary.csv
+    	printf "Total,%d,100.00\n" "$total" >> AGGRE/Chip1/barcode31/sequential_summary.csv
+   	
+
+[Tue Apr 22 16:01:00 2025]
+rule aggregate_data_summary:
+    input: results/Chip2/barcode27/0/non_sequential_summary.csv, results/Chip2/barcode27/1/non_sequential_summary.csv, results/Chip2/barcode27/2/non_sequential_summary.csv, results/Chip2/barcode27/3/non_sequential_summary.csv, results/Chip2/barcode27/4/non_sequential_summary.csv, results/Chip2/barcode27/5/non_sequential_summary.csv, results/Chip2/barcode27/6/non_sequential_summary.csv, results/Chip2/barcode27/7/non_sequential_summary.csv, results/Chip2/barcode27/8/non_sequential_summary.csv, results/Chip2/barcode27/9/non_sequential_summary.csv, results/Chip2/barcode27/0/sequential_summary.csv, results/Chip2/barcode27/1/sequential_summary.csv, results/Chip2/barcode27/2/sequential_summary.csv, results/Chip2/barcode27/3/sequential_summary.csv, results/Chip2/barcode27/4/sequential_summary.csv, results/Chip2/barcode27/5/sequential_summary.csv, results/Chip2/barcode27/6/sequential_summary.csv, results/Chip2/barcode27/7/sequential_summary.csv, results/Chip2/barcode27/8/sequential_summary.csv, results/Chip2/barcode27/9/sequential_summary.csv
+    output: AGGRE/Chip2/barcode27/non_sequential_summary.csv, AGGRE/Chip2/barcode27/sequential_summary.csv
+    jobid: 215
+    wildcards: chip=Chip2, native=barcode27
+
+
+    	echo "Seq,Read_count,Percentage" > AGGRE/Chip2/barcode27/non_sequential_summary.csv
+    	echo "Seq,Read_count,Percentage" > AGGRE/Chip2/barcode27/sequential_summary.csv
+
+    	total=0
+    	for f in results/Chip2/barcode27/0/sequential_summary.csv results/Chip2/barcode27/1/sequential_summary.csv results/Chip2/barcode27/2/sequential_summary.csv results/Chip2/barcode27/3/sequential_summary.csv results/Chip2/barcode27/4/sequential_summary.csv results/Chip2/barcode27/5/sequential_summary.csv results/Chip2/barcode27/6/sequential_summary.csv results/Chip2/barcode27/7/sequential_summary.csv results/Chip2/barcode27/8/sequential_summary.csv results/Chip2/barcode27/9/sequential_summary.csv; do
+            c=$(grep Total "$f" | sed "s|,| |g" | awk '{print $1}')
+	    echo $f $c
+            total=$(echo $total $c | awk '{print $1+$2}')
+    	done
+
+    	nlen=0
+    	for f in results/Chip2/barcode27/0/non_sequential_summary.csv results/Chip2/barcode27/1/non_sequential_summary.csv results/Chip2/barcode27/2/non_sequential_summary.csv results/Chip2/barcode27/3/non_sequential_summary.csv results/Chip2/barcode27/4/non_sequential_summary.csv results/Chip2/barcode27/5/non_sequential_summary.csv results/Chip2/barcode27/6/non_sequential_summary.csv results/Chip2/barcode27/7/non_sequential_summary.csv results/Chip2/barcode27/8/non_sequential_summary.csv results/Chip2/barcode27/9/non_sequential_summary.csv; do
+            c=$(grep Reads_not_meeting_length_criteria "$f" | sed "s|,| |g" | awk '{print $1}')
+            nlen=$(echo $nlen $c | awk '{print $1+$2}')
+    	done
+
+    	nunmatched=0
+    	for f in results/Chip2/barcode27/0/non_sequential_summary.csv results/Chip2/barcode27/1/non_sequential_summary.csv results/Chip2/barcode27/2/non_sequential_summary.csv results/Chip2/barcode27/3/non_sequential_summary.csv results/Chip2/barcode27/4/non_sequential_summary.csv results/Chip2/barcode27/5/non_sequential_summary.csv results/Chip2/barcode27/6/non_sequential_summary.csv results/Chip2/barcode27/7/non_sequential_summary.csv results/Chip2/barcode27/8/non_sequential_summary.csv results/Chip2/barcode27/9/non_sequential_summary.csv; do
+            c=$(grep Reads_unmatched "$f" | sed "s|,| |g" | awk '{print $1}')
+            nunmatched=$(echo $nunmatched $c | awk '{print $1+$2}')
+    	done
+
+    	for temp in $(grep '^>' Inputs/T3_4-Rev.fasta | sed 's/>//' ); do
+            count=0
+            for f in results/Chip2/barcode27/0/non_sequential_summary.csv results/Chip2/barcode27/1/non_sequential_summary.csv results/Chip2/barcode27/2/non_sequential_summary.csv results/Chip2/barcode27/3/non_sequential_summary.csv results/Chip2/barcode27/4/non_sequential_summary.csv results/Chip2/barcode27/5/non_sequential_summary.csv results/Chip2/barcode27/6/non_sequential_summary.csv results/Chip2/barcode27/7/non_sequential_summary.csv results/Chip2/barcode27/8/non_sequential_summary.csv results/Chip2/barcode27/9/non_sequential_summary.csv; do
+            	c=$(grep "$temp" "$f" | sed "s|,| |g" | awk '{print $1}')
+            	count=$(echo $count $c | awk '{print $1+$2}')
+            done
+            printf "%s,%d,%6.2f\n" "$temp" "$count" "$(awk -v a=$count -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip2/barcode27/non_sequential_summary.csv
+
+            count=0
+            for f in results/Chip2/barcode27/0/sequential_summary.csv results/Chip2/barcode27/1/sequential_summary.csv results/Chip2/barcode27/2/sequential_summary.csv results/Chip2/barcode27/3/sequential_summary.csv results/Chip2/barcode27/4/sequential_summary.csv results/Chip2/barcode27/5/sequential_summary.csv results/Chip2/barcode27/6/sequential_summary.csv results/Chip2/barcode27/7/sequential_summary.csv results/Chip2/barcode27/8/sequential_summary.csv results/Chip2/barcode27/9/sequential_summary.csv; do
+            	c=$(grep "$temp" "$f" | sed "s|,| |g" | awk '{print $1}')
+            	count=$(echo $count $c | awk '{print $1+$2}')
+            done
+            printf "%s,%d,%6.2f\n" "$temp" "$count" "$(awk -v a=$count -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip2/barcode27/sequential_summary.csv
+        done
+
+    	printf "Reads_not_meeting_length_criteria,%d,%6.2f\n" "$nlen" "$(awk -v a=$nlen -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip2/barcode27/non_sequential_summary.csv
+    	printf "Reads_unmatched,%d,%6.2f\n" "$nunmatched" "$(awk -v a=$nunmatched -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip2/barcode27/non_sequential_summary.csv
+    	printf "Total,%d,100.00\n" "$total" >> AGGRE/Chip2/barcode27/sequential_summary.csv
+   	
+
+[Tue Apr 22 16:01:00 2025]
+rule aggregate_data_summary:
+    input: results/Chip1/barcode25/0/non_sequential_summary.csv, results/Chip1/barcode25/1/non_sequential_summary.csv, results/Chip1/barcode25/2/non_sequential_summary.csv, results/Chip1/barcode25/3/non_sequential_summary.csv, results/Chip1/barcode25/4/non_sequential_summary.csv, results/Chip1/barcode25/5/non_sequential_summary.csv, results/Chip1/barcode25/6/non_sequential_summary.csv, results/Chip1/barcode25/7/non_sequential_summary.csv, results/Chip1/barcode25/8/non_sequential_summary.csv, results/Chip1/barcode25/9/non_sequential_summary.csv, results/Chip1/barcode25/0/sequential_summary.csv, results/Chip1/barcode25/1/sequential_summary.csv, results/Chip1/barcode25/2/sequential_summary.csv, results/Chip1/barcode25/3/sequential_summary.csv, results/Chip1/barcode25/4/sequential_summary.csv, results/Chip1/barcode25/5/sequential_summary.csv, results/Chip1/barcode25/6/sequential_summary.csv, results/Chip1/barcode25/7/sequential_summary.csv, results/Chip1/barcode25/8/sequential_summary.csv, results/Chip1/barcode25/9/sequential_summary.csv
+    output: AGGRE/Chip1/barcode25/non_sequential_summary.csv, AGGRE/Chip1/barcode25/sequential_summary.csv
+    jobid: 213
+    wildcards: chip=Chip1, native=barcode25
+
+
+    	echo "Seq,Read_count,Percentage" > AGGRE/Chip1/barcode25/non_sequential_summary.csv
+    	echo "Seq,Read_count,Percentage" > AGGRE/Chip1/barcode25/sequential_summary.csv
+
+    	total=0
+    	for f in results/Chip1/barcode25/0/sequential_summary.csv results/Chip1/barcode25/1/sequential_summary.csv results/Chip1/barcode25/2/sequential_summary.csv results/Chip1/barcode25/3/sequential_summary.csv results/Chip1/barcode25/4/sequential_summary.csv results/Chip1/barcode25/5/sequential_summary.csv results/Chip1/barcode25/6/sequential_summary.csv results/Chip1/barcode25/7/sequential_summary.csv results/Chip1/barcode25/8/sequential_summary.csv results/Chip1/barcode25/9/sequential_summary.csv; do
+            c=$(grep Total "$f" | sed "s|,| |g" | awk '{print $1}')
+	    echo $f $c
+            total=$(echo $total $c | awk '{print $1+$2}')
+    	done
+
+    	nlen=0
+    	for f in results/Chip1/barcode25/0/non_sequential_summary.csv results/Chip1/barcode25/1/non_sequential_summary.csv results/Chip1/barcode25/2/non_sequential_summary.csv results/Chip1/barcode25/3/non_sequential_summary.csv results/Chip1/barcode25/4/non_sequential_summary.csv results/Chip1/barcode25/5/non_sequential_summary.csv results/Chip1/barcode25/6/non_sequential_summary.csv results/Chip1/barcode25/7/non_sequential_summary.csv results/Chip1/barcode25/8/non_sequential_summary.csv results/Chip1/barcode25/9/non_sequential_summary.csv; do
+            c=$(grep Reads_not_meeting_length_criteria "$f" | sed "s|,| |g" | awk '{print $1}')
+            nlen=$(echo $nlen $c | awk '{print $1+$2}')
+    	done
+
+    	nunmatched=0
+    	for f in results/Chip1/barcode25/0/non_sequential_summary.csv results/Chip1/barcode25/1/non_sequential_summary.csv results/Chip1/barcode25/2/non_sequential_summary.csv results/Chip1/barcode25/3/non_sequential_summary.csv results/Chip1/barcode25/4/non_sequential_summary.csv results/Chip1/barcode25/5/non_sequential_summary.csv results/Chip1/barcode25/6/non_sequential_summary.csv results/Chip1/barcode25/7/non_sequential_summary.csv results/Chip1/barcode25/8/non_sequential_summary.csv results/Chip1/barcode25/9/non_sequential_summary.csv; do
+            c=$(grep Reads_unmatched "$f" | sed "s|,| |g" | awk '{print $1}')
+            nunmatched=$(echo $nunmatched $c | awk '{print $1+$2}')
+    	done
+
+    	for temp in $(grep '^>' Inputs/T3_4-Rev.fasta | sed 's/>//' ); do
+            count=0
+            for f in results/Chip1/barcode25/0/non_sequential_summary.csv results/Chip1/barcode25/1/non_sequential_summary.csv results/Chip1/barcode25/2/non_sequential_summary.csv results/Chip1/barcode25/3/non_sequential_summary.csv results/Chip1/barcode25/4/non_sequential_summary.csv results/Chip1/barcode25/5/non_sequential_summary.csv results/Chip1/barcode25/6/non_sequential_summary.csv results/Chip1/barcode25/7/non_sequential_summary.csv results/Chip1/barcode25/8/non_sequential_summary.csv results/Chip1/barcode25/9/non_sequential_summary.csv; do
+            	c=$(grep "$temp" "$f" | sed "s|,| |g" | awk '{print $1}')
+            	count=$(echo $count $c | awk '{print $1+$2}')
+            done
+            printf "%s,%d,%6.2f\n" "$temp" "$count" "$(awk -v a=$count -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip1/barcode25/non_sequential_summary.csv
+
+            count=0
+            for f in results/Chip1/barcode25/0/sequential_summary.csv results/Chip1/barcode25/1/sequential_summary.csv results/Chip1/barcode25/2/sequential_summary.csv results/Chip1/barcode25/3/sequential_summary.csv results/Chip1/barcode25/4/sequential_summary.csv results/Chip1/barcode25/5/sequential_summary.csv results/Chip1/barcode25/6/sequential_summary.csv results/Chip1/barcode25/7/sequential_summary.csv results/Chip1/barcode25/8/sequential_summary.csv results/Chip1/barcode25/9/sequential_summary.csv; do
+            	c=$(grep "$temp" "$f" | sed "s|,| |g" | awk '{print $1}')
+            	count=$(echo $count $c | awk '{print $1+$2}')
+            done
+            printf "%s,%d,%6.2f\n" "$temp" "$count" "$(awk -v a=$count -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip1/barcode25/sequential_summary.csv
+        done
+
+    	printf "Reads_not_meeting_length_criteria,%d,%6.2f\n" "$nlen" "$(awk -v a=$nlen -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip1/barcode25/non_sequential_summary.csv
+    	printf "Reads_unmatched,%d,%6.2f\n" "$nunmatched" "$(awk -v a=$nunmatched -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip1/barcode25/non_sequential_summary.csv
+    	printf "Total,%d,100.00\n" "$total" >> AGGRE/Chip1/barcode25/sequential_summary.csv
+   	
+
+[Tue Apr 22 16:01:00 2025]
+rule aggregate_data_summary:
+    input: results/Chip2/barcode26/0/non_sequential_summary.csv, results/Chip2/barcode26/1/non_sequential_summary.csv, results/Chip2/barcode26/2/non_sequential_summary.csv, results/Chip2/barcode26/3/non_sequential_summary.csv, results/Chip2/barcode26/4/non_sequential_summary.csv, results/Chip2/barcode26/5/non_sequential_summary.csv, results/Chip2/barcode26/6/non_sequential_summary.csv, results/Chip2/barcode26/7/non_sequential_summary.csv, results/Chip2/barcode26/8/non_sequential_summary.csv, results/Chip2/barcode26/9/non_sequential_summary.csv, results/Chip2/barcode26/0/sequential_summary.csv, results/Chip2/barcode26/1/sequential_summary.csv, results/Chip2/barcode26/2/sequential_summary.csv, results/Chip2/barcode26/3/sequential_summary.csv, results/Chip2/barcode26/4/sequential_summary.csv, results/Chip2/barcode26/5/sequential_summary.csv, results/Chip2/barcode26/6/sequential_summary.csv, results/Chip2/barcode26/7/sequential_summary.csv, results/Chip2/barcode26/8/sequential_summary.csv, results/Chip2/barcode26/9/sequential_summary.csv
+    output: AGGRE/Chip2/barcode26/non_sequential_summary.csv, AGGRE/Chip2/barcode26/sequential_summary.csv
+    jobid: 216
+    wildcards: chip=Chip2, native=barcode26
+
+
+    	echo "Seq,Read_count,Percentage" > AGGRE/Chip2/barcode26/non_sequential_summary.csv
+    	echo "Seq,Read_count,Percentage" > AGGRE/Chip2/barcode26/sequential_summary.csv
+
+    	total=0
+    	for f in results/Chip2/barcode26/0/sequential_summary.csv results/Chip2/barcode26/1/sequential_summary.csv results/Chip2/barcode26/2/sequential_summary.csv results/Chip2/barcode26/3/sequential_summary.csv results/Chip2/barcode26/4/sequential_summary.csv results/Chip2/barcode26/5/sequential_summary.csv results/Chip2/barcode26/6/sequential_summary.csv results/Chip2/barcode26/7/sequential_summary.csv results/Chip2/barcode26/8/sequential_summary.csv results/Chip2/barcode26/9/sequential_summary.csv; do
+            c=$(grep Total "$f" | sed "s|,| |g" | awk '{print $1}')
+	    echo $f $c
+            total=$(echo $total $c | awk '{print $1+$2}')
+    	done
+
+    	nlen=0
+    	for f in results/Chip2/barcode26/0/non_sequential_summary.csv results/Chip2/barcode26/1/non_sequential_summary.csv results/Chip2/barcode26/2/non_sequential_summary.csv results/Chip2/barcode26/3/non_sequential_summary.csv results/Chip2/barcode26/4/non_sequential_summary.csv results/Chip2/barcode26/5/non_sequential_summary.csv results/Chip2/barcode26/6/non_sequential_summary.csv results/Chip2/barcode26/7/non_sequential_summary.csv results/Chip2/barcode26/8/non_sequential_summary.csv results/Chip2/barcode26/9/non_sequential_summary.csv; do
+            c=$(grep Reads_not_meeting_length_criteria "$f" | sed "s|,| |g" | awk '{print $1}')
+            nlen=$(echo $nlen $c | awk '{print $1+$2}')
+    	done
+
+    	nunmatched=0
+    	for f in results/Chip2/barcode26/0/non_sequential_summary.csv results/Chip2/barcode26/1/non_sequential_summary.csv results/Chip2/barcode26/2/non_sequential_summary.csv results/Chip2/barcode26/3/non_sequential_summary.csv results/Chip2/barcode26/4/non_sequential_summary.csv results/Chip2/barcode26/5/non_sequential_summary.csv results/Chip2/barcode26/6/non_sequential_summary.csv results/Chip2/barcode26/7/non_sequential_summary.csv results/Chip2/barcode26/8/non_sequential_summary.csv results/Chip2/barcode26/9/non_sequential_summary.csv; do
+            c=$(grep Reads_unmatched "$f" | sed "s|,| |g" | awk '{print $1}')
+            nunmatched=$(echo $nunmatched $c | awk '{print $1+$2}')
+    	done
+
+    	for temp in $(grep '^>' Inputs/T3_4-Rev.fasta | sed 's/>//' ); do
+            count=0
+            for f in results/Chip2/barcode26/0/non_sequential_summary.csv results/Chip2/barcode26/1/non_sequential_summary.csv results/Chip2/barcode26/2/non_sequential_summary.csv results/Chip2/barcode26/3/non_sequential_summary.csv results/Chip2/barcode26/4/non_sequential_summary.csv results/Chip2/barcode26/5/non_sequential_summary.csv results/Chip2/barcode26/6/non_sequential_summary.csv results/Chip2/barcode26/7/non_sequential_summary.csv results/Chip2/barcode26/8/non_sequential_summary.csv results/Chip2/barcode26/9/non_sequential_summary.csv; do
+            	c=$(grep "$temp" "$f" | sed "s|,| |g" | awk '{print $1}')
+            	count=$(echo $count $c | awk '{print $1+$2}')
+            done
+            printf "%s,%d,%6.2f\n" "$temp" "$count" "$(awk -v a=$count -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip2/barcode26/non_sequential_summary.csv
+
+            count=0
+            for f in results/Chip2/barcode26/0/sequential_summary.csv results/Chip2/barcode26/1/sequential_summary.csv results/Chip2/barcode26/2/sequential_summary.csv results/Chip2/barcode26/3/sequential_summary.csv results/Chip2/barcode26/4/sequential_summary.csv results/Chip2/barcode26/5/sequential_summary.csv results/Chip2/barcode26/6/sequential_summary.csv results/Chip2/barcode26/7/sequential_summary.csv results/Chip2/barcode26/8/sequential_summary.csv results/Chip2/barcode26/9/sequential_summary.csv; do
+            	c=$(grep "$temp" "$f" | sed "s|,| |g" | awk '{print $1}')
+            	count=$(echo $count $c | awk '{print $1+$2}')
+            done
+            printf "%s,%d,%6.2f\n" "$temp" "$count" "$(awk -v a=$count -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip2/barcode26/sequential_summary.csv
+        done
+
+    	printf "Reads_not_meeting_length_criteria,%d,%6.2f\n" "$nlen" "$(awk -v a=$nlen -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip2/barcode26/non_sequential_summary.csv
+    	printf "Reads_unmatched,%d,%6.2f\n" "$nunmatched" "$(awk -v a=$nunmatched -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip2/barcode26/non_sequential_summary.csv
+    	printf "Total,%d,100.00\n" "$total" >> AGGRE/Chip2/barcode26/sequential_summary.csv
+   	
+
+[Tue Apr 22 16:01:00 2025]
+rule aggregate_data_summary:
+    input: results/Chip1/barcode30/0/non_sequential_summary.csv, results/Chip1/barcode30/1/non_sequential_summary.csv, results/Chip1/barcode30/2/non_sequential_summary.csv, results/Chip1/barcode30/3/non_sequential_summary.csv, results/Chip1/barcode30/4/non_sequential_summary.csv, results/Chip1/barcode30/5/non_sequential_summary.csv, results/Chip1/barcode30/6/non_sequential_summary.csv, results/Chip1/barcode30/7/non_sequential_summary.csv, results/Chip1/barcode30/8/non_sequential_summary.csv, results/Chip1/barcode30/9/non_sequential_summary.csv, results/Chip1/barcode30/0/sequential_summary.csv, results/Chip1/barcode30/1/sequential_summary.csv, results/Chip1/barcode30/2/sequential_summary.csv, results/Chip1/barcode30/3/sequential_summary.csv, results/Chip1/barcode30/4/sequential_summary.csv, results/Chip1/barcode30/5/sequential_summary.csv, results/Chip1/barcode30/6/sequential_summary.csv, results/Chip1/barcode30/7/sequential_summary.csv, results/Chip1/barcode30/8/sequential_summary.csv, results/Chip1/barcode30/9/sequential_summary.csv
+    output: AGGRE/Chip1/barcode30/non_sequential_summary.csv, AGGRE/Chip1/barcode30/sequential_summary.csv
+    jobid: 211
+    wildcards: chip=Chip1, native=barcode30
+
+
+    	echo "Seq,Read_count,Percentage" > AGGRE/Chip1/barcode30/non_sequential_summary.csv
+    	echo "Seq,Read_count,Percentage" > AGGRE/Chip1/barcode30/sequential_summary.csv
+
+    	total=0
+    	for f in results/Chip1/barcode30/0/sequential_summary.csv results/Chip1/barcode30/1/sequential_summary.csv results/Chip1/barcode30/2/sequential_summary.csv results/Chip1/barcode30/3/sequential_summary.csv results/Chip1/barcode30/4/sequential_summary.csv results/Chip1/barcode30/5/sequential_summary.csv results/Chip1/barcode30/6/sequential_summary.csv results/Chip1/barcode30/7/sequential_summary.csv results/Chip1/barcode30/8/sequential_summary.csv results/Chip1/barcode30/9/sequential_summary.csv; do
+            c=$(grep Total "$f" | sed "s|,| |g" | awk '{print $1}')
+	    echo $f $c
+            total=$(echo $total $c | awk '{print $1+$2}')
+    	done
+
+    	nlen=0
+    	for f in results/Chip1/barcode30/0/non_sequential_summary.csv results/Chip1/barcode30/1/non_sequential_summary.csv results/Chip1/barcode30/2/non_sequential_summary.csv results/Chip1/barcode30/3/non_sequential_summary.csv results/Chip1/barcode30/4/non_sequential_summary.csv results/Chip1/barcode30/5/non_sequential_summary.csv results/Chip1/barcode30/6/non_sequential_summary.csv results/Chip1/barcode30/7/non_sequential_summary.csv results/Chip1/barcode30/8/non_sequential_summary.csv results/Chip1/barcode30/9/non_sequential_summary.csv; do
+            c=$(grep Reads_not_meeting_length_criteria "$f" | sed "s|,| |g" | awk '{print $1}')
+            nlen=$(echo $nlen $c | awk '{print $1+$2}')
+    	done
+
+    	nunmatched=0
+    	for f in results/Chip1/barcode30/0/non_sequential_summary.csv results/Chip1/barcode30/1/non_sequential_summary.csv results/Chip1/barcode30/2/non_sequential_summary.csv results/Chip1/barcode30/3/non_sequential_summary.csv results/Chip1/barcode30/4/non_sequential_summary.csv results/Chip1/barcode30/5/non_sequential_summary.csv results/Chip1/barcode30/6/non_sequential_summary.csv results/Chip1/barcode30/7/non_sequential_summary.csv results/Chip1/barcode30/8/non_sequential_summary.csv results/Chip1/barcode30/9/non_sequential_summary.csv; do
+            c=$(grep Reads_unmatched "$f" | sed "s|,| |g" | awk '{print $1}')
+            nunmatched=$(echo $nunmatched $c | awk '{print $1+$2}')
+    	done
+
+    	for temp in $(grep '^>' Inputs/T3_4-Rev.fasta | sed 's/>//' ); do
+            count=0
+            for f in results/Chip1/barcode30/0/non_sequential_summary.csv results/Chip1/barcode30/1/non_sequential_summary.csv results/Chip1/barcode30/2/non_sequential_summary.csv results/Chip1/barcode30/3/non_sequential_summary.csv results/Chip1/barcode30/4/non_sequential_summary.csv results/Chip1/barcode30/5/non_sequential_summary.csv results/Chip1/barcode30/6/non_sequential_summary.csv results/Chip1/barcode30/7/non_sequential_summary.csv results/Chip1/barcode30/8/non_sequential_summary.csv results/Chip1/barcode30/9/non_sequential_summary.csv; do
+            	c=$(grep "$temp" "$f" | sed "s|,| |g" | awk '{print $1}')
+            	count=$(echo $count $c | awk '{print $1+$2}')
+            done
+            printf "%s,%d,%6.2f\n" "$temp" "$count" "$(awk -v a=$count -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip1/barcode30/non_sequential_summary.csv
+
+            count=0
+            for f in results/Chip1/barcode30/0/sequential_summary.csv results/Chip1/barcode30/1/sequential_summary.csv results/Chip1/barcode30/2/sequential_summary.csv results/Chip1/barcode30/3/sequential_summary.csv results/Chip1/barcode30/4/sequential_summary.csv results/Chip1/barcode30/5/sequential_summary.csv results/Chip1/barcode30/6/sequential_summary.csv results/Chip1/barcode30/7/sequential_summary.csv results/Chip1/barcode30/8/sequential_summary.csv results/Chip1/barcode30/9/sequential_summary.csv; do
+            	c=$(grep "$temp" "$f" | sed "s|,| |g" | awk '{print $1}')
+            	count=$(echo $count $c | awk '{print $1+$2}')
+            done
+            printf "%s,%d,%6.2f\n" "$temp" "$count" "$(awk -v a=$count -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip1/barcode30/sequential_summary.csv
+        done
+
+    	printf "Reads_not_meeting_length_criteria,%d,%6.2f\n" "$nlen" "$(awk -v a=$nlen -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip1/barcode30/non_sequential_summary.csv
+    	printf "Reads_unmatched,%d,%6.2f\n" "$nunmatched" "$(awk -v a=$nunmatched -v b=$total 'BEGIN{print (a/b)*100}')" >> AGGRE/Chip1/barcode30/non_sequential_summary.csv
+    	printf "Total,%d,100.00\n" "$total" >> AGGRE/Chip1/barcode30/sequential_summary.csv
+   	
+[Tue Apr 22 16:01:01 2025]
+Finished job 212.
+1 of 8 steps (12%) done
+[Tue Apr 22 16:01:01 2025]
+Finished job 214.
+2 of 8 steps (25%) done
+[Tue Apr 22 16:01:01 2025]
+Finished job 213.
+3 of 8 steps (38%) done
+[Tue Apr 22 16:01:01 2025]
+Finished job 217.
+4 of 8 steps (50%) done
+[Tue Apr 22 16:01:01 2025]
+Finished job 215.
+5 of 8 steps (62%) done
+[Tue Apr 22 16:01:01 2025]
+Finished job 216.
+6 of 8 steps (75%) done
+[Tue Apr 22 16:01:01 2025]
+Finished job 211.
+7 of 8 steps (88%) done
+Resources before job selection: {'_cores': 40, '_nodes': 9223372036854775807}
+Ready jobs (1):
+	all
+Selected jobs (1):
+	all
+Resources after job selection: {'_cores': 39, '_nodes': 9223372036854775806}
+
+[Tue Apr 22 16:01:01 2025]
+localrule all:
+    input: results/Chip1/barcode30/0/fastq_files.lst, results/Chip1/barcode30/1/fastq_files.lst, results/Chip1/barcode30/2/fastq_files.lst, results/Chip1/barcode30/3/fastq_files.lst, results/Chip1/barcode30/4/fastq_files.lst, results/Chip1/barcode30/5/fastq_files.lst, results/Chip1/barcode30/6/fastq_files.lst, results/Chip1/barcode30/7/fastq_files.lst, results/Chip1/barcode30/8/fastq_files.lst, results/Chip1/barcode30/9/fastq_files.lst, results/Chip1/barcode31/0/fastq_files.lst, results/Chip1/barcode31/1/fastq_files.lst, results/Chip1/barcode31/2/fastq_files.lst, results/Chip1/barcode31/3/fastq_files.lst, results/Chip1/barcode31/4/fastq_files.lst, results/Chip1/barcode31/5/fastq_files.lst, results/Chip1/barcode31/6/fastq_files.lst, results/Chip1/barcode31/7/fastq_files.lst, results/Chip1/barcode31/8/fastq_files.lst, results/Chip1/barcode31/9/fastq_files.lst, results/Chip1/barcode25/0/fastq_files.lst, results/Chip1/barcode25/1/fastq_files.lst, results/Chip1/barcode25/2/fastq_files.lst, results/Chip1/barcode25/3/fastq_files.lst, results/Chip1/barcode25/4/fastq_files.lst, results/Chip1/barcode25/5/fastq_files.lst, results/Chip1/barcode25/6/fastq_files.lst, results/Chip1/barcode25/7/fastq_files.lst, results/Chip1/barcode25/8/fastq_files.lst, results/Chip1/barcode25/9/fastq_files.lst, results/Chip2/barcode29/0/fastq_files.lst, results/Chip2/barcode29/1/fastq_files.lst, results/Chip2/barcode29/2/fastq_files.lst, results/Chip2/barcode29/3/fastq_files.lst, results/Chip2/barcode29/4/fastq_files.lst, results/Chip2/barcode29/5/fastq_files.lst, results/Chip2/barcode29/6/fastq_files.lst, results/Chip2/barcode29/7/fastq_files.lst, results/Chip2/barcode29/8/fastq_files.lst, results/Chip2/barcode29/9/fastq_files.lst, results/Chip2/barcode27/0/fastq_files.lst, results/Chip2/barcode27/1/fastq_files.lst, results/Chip2/barcode27/2/fastq_files.lst, results/Chip2/barcode27/3/fastq_files.lst, results/Chip2/barcode27/4/fastq_files.lst, results/Chip2/barcode27/5/fastq_files.lst, results/Chip2/barcode27/6/fastq_files.lst, results/Chip2/barcode27/7/fastq_files.lst, results/Chip2/barcode27/8/fastq_files.lst, results/Chip2/barcode27/9/fastq_files.lst, results/Chip2/barcode26/0/fastq_files.lst, results/Chip2/barcode26/1/fastq_files.lst, results/Chip2/barcode26/2/fastq_files.lst, results/Chip2/barcode26/3/fastq_files.lst, results/Chip2/barcode26/4/fastq_files.lst, results/Chip2/barcode26/5/fastq_files.lst, results/Chip2/barcode26/6/fastq_files.lst, results/Chip2/barcode26/7/fastq_files.lst, results/Chip2/barcode26/8/fastq_files.lst, results/Chip2/barcode26/9/fastq_files.lst, results/Chip2/barcode28/0/fastq_files.lst, results/Chip2/barcode28/1/fastq_files.lst, results/Chip2/barcode28/2/fastq_files.lst, results/Chip2/barcode28/3/fastq_files.lst, results/Chip2/barcode28/4/fastq_files.lst, results/Chip2/barcode28/5/fastq_files.lst, results/Chip2/barcode28/6/fastq_files.lst, results/Chip2/barcode28/7/fastq_files.lst, results/Chip2/barcode28/8/fastq_files.lst, results/Chip2/barcode28/9/fastq_files.lst, results/Chip1/barcode30/0/merged.fastq.gz, results/Chip1/barcode30/1/merged.fastq.gz, results/Chip1/barcode30/2/merged.fastq.gz, results/Chip1/barcode30/3/merged.fastq.gz, results/Chip1/barcode30/4/merged.fastq.gz, results/Chip1/barcode30/5/merged.fastq.gz, results/Chip1/barcode30/6/merged.fastq.gz, results/Chip1/barcode30/7/merged.fastq.gz, results/Chip1/barcode30/8/merged.fastq.gz, results/Chip1/barcode30/9/merged.fastq.gz, results/Chip1/barcode31/0/merged.fastq.gz, results/Chip1/barcode31/1/merged.fastq.gz, results/Chip1/barcode31/2/merged.fastq.gz, results/Chip1/barcode31/3/merged.fastq.gz, results/Chip1/barcode31/4/merged.fastq.gz, results/Chip1/barcode31/5/merged.fastq.gz, results/Chip1/barcode31/6/merged.fastq.gz, results/Chip1/barcode31/7/merged.fastq.gz, results/Chip1/barcode31/8/merged.fastq.gz, results/Chip1/barcode31/9/merged.fastq.gz, results/Chip1/barcode25/0/merged.fastq.gz, results/Chip1/barcode25/1/merged.fastq.gz, results/Chip1/barcode25/2/merged.fastq.gz, results/Chip1/barcode25/3/merged.fastq.gz, results/Chip1/barcode25/4/merged.fastq.gz, results/Chip1/barcode25/5/merged.fastq.gz, results/Chip1/barcode25/6/merged.fastq.gz, results/Chip1/barcode25/7/merged.fastq.gz, results/Chip1/barcode25/8/merged.fastq.gz, results/Chip1/barcode25/9/merged.fastq.gz, results/Chip2/barcode29/0/merged.fastq.gz, results/Chip2/barcode29/1/merged.fastq.gz, results/Chip2/barcode29/2/merged.fastq.gz, results/Chip2/barcode29/3/merged.fastq.gz, results/Chip2/barcode29/4/merged.fastq.gz, results/Chip2/barcode29/5/merged.fastq.gz, results/Chip2/barcode29/6/merged.fastq.gz, results/Chip2/barcode29/7/merged.fastq.gz, results/Chip2/barcode29/8/merged.fastq.gz, results/Chip2/barcode29/9/merged.fastq.gz, results/Chip2/barcode27/0/merged.fastq.gz, results/Chip2/barcode27/1/merged.fastq.gz, results/Chip2/barcode27/2/merged.fastq.gz, results/Chip2/barcode27/3/merged.fastq.gz, results/Chip2/barcode27/4/merged.fastq.gz, results/Chip2/barcode27/5/merged.fastq.gz, results/Chip2/barcode27/6/merged.fastq.gz, results/Chip2/barcode27/7/merged.fastq.gz, results/Chip2/barcode27/8/merged.fastq.gz, results/Chip2/barcode27/9/merged.fastq.gz, results/Chip2/barcode26/0/merged.fastq.gz, results/Chip2/barcode26/1/merged.fastq.gz, results/Chip2/barcode26/2/merged.fastq.gz, results/Chip2/barcode26/3/merged.fastq.gz, results/Chip2/barcode26/4/merged.fastq.gz, results/Chip2/barcode26/5/merged.fastq.gz, results/Chip2/barcode26/6/merged.fastq.gz, results/Chip2/barcode26/7/merged.fastq.gz, results/Chip2/barcode26/8/merged.fastq.gz, results/Chip2/barcode26/9/merged.fastq.gz, results/Chip2/barcode28/0/merged.fastq.gz, results/Chip2/barcode28/1/merged.fastq.gz, results/Chip2/barcode28/2/merged.fastq.gz, results/Chip2/barcode28/3/merged.fastq.gz, results/Chip2/barcode28/4/merged.fastq.gz, results/Chip2/barcode28/5/merged.fastq.gz, results/Chip2/barcode28/6/merged.fastq.gz, results/Chip2/barcode28/7/merged.fastq.gz, results/Chip2/barcode28/8/merged.fastq.gz, results/Chip2/barcode28/9/merged.fastq.gz, results/Chip1/barcode30/0/sequential_summary.csv, results/Chip1/barcode30/1/sequential_summary.csv, results/Chip1/barcode30/2/sequential_summary.csv, results/Chip1/barcode30/3/sequential_summary.csv, results/Chip1/barcode30/4/sequential_summary.csv, results/Chip1/barcode30/5/sequential_summary.csv, results/Chip1/barcode30/6/sequential_summary.csv, results/Chip1/barcode30/7/sequential_summary.csv, results/Chip1/barcode30/8/sequential_summary.csv, results/Chip1/barcode30/9/sequential_summary.csv, results/Chip1/barcode31/0/sequential_summary.csv, results/Chip1/barcode31/1/sequential_summary.csv, results/Chip1/barcode31/2/sequential_summary.csv, results/Chip1/barcode31/3/sequential_summary.csv, results/Chip1/barcode31/4/sequential_summary.csv, results/Chip1/barcode31/5/sequential_summary.csv, results/Chip1/barcode31/6/sequential_summary.csv, results/Chip1/barcode31/7/sequential_summary.csv, results/Chip1/barcode31/8/sequential_summary.csv, results/Chip1/barcode31/9/sequential_summary.csv, results/Chip1/barcode25/0/sequential_summary.csv, results/Chip1/barcode25/1/sequential_summary.csv, results/Chip1/barcode25/2/sequential_summary.csv, results/Chip1/barcode25/3/sequential_summary.csv, results/Chip1/barcode25/4/sequential_summary.csv, results/Chip1/barcode25/5/sequential_summary.csv, results/Chip1/barcode25/6/sequential_summary.csv, results/Chip1/barcode25/7/sequential_summary.csv, results/Chip1/barcode25/8/sequential_summary.csv, results/Chip1/barcode25/9/sequential_summary.csv, results/Chip2/barcode29/0/sequential_summary.csv, results/Chip2/barcode29/1/sequential_summary.csv, results/Chip2/barcode29/2/sequential_summary.csv, results/Chip2/barcode29/3/sequential_summary.csv, results/Chip2/barcode29/4/sequential_summary.csv, results/Chip2/barcode29/5/sequential_summary.csv, results/Chip2/barcode29/6/sequential_summary.csv, results/Chip2/barcode29/7/sequential_summary.csv, results/Chip2/barcode29/8/sequential_summary.csv, results/Chip2/barcode29/9/sequential_summary.csv, results/Chip2/barcode27/0/sequential_summary.csv, results/Chip2/barcode27/1/sequential_summary.csv, results/Chip2/barcode27/2/sequential_summary.csv, results/Chip2/barcode27/3/sequential_summary.csv, results/Chip2/barcode27/4/sequential_summary.csv, results/Chip2/barcode27/5/sequential_summary.csv, results/Chip2/barcode27/6/sequential_summary.csv, results/Chip2/barcode27/7/sequential_summary.csv, results/Chip2/barcode27/8/sequential_summary.csv, results/Chip2/barcode27/9/sequential_summary.csv, results/Chip2/barcode26/0/sequential_summary.csv, results/Chip2/barcode26/1/sequential_summary.csv, results/Chip2/barcode26/2/sequential_summary.csv, results/Chip2/barcode26/3/sequential_summary.csv, results/Chip2/barcode26/4/sequential_summary.csv, results/Chip2/barcode26/5/sequential_summary.csv, results/Chip2/barcode26/6/sequential_summary.csv, results/Chip2/barcode26/7/sequential_summary.csv, results/Chip2/barcode26/8/sequential_summary.csv, results/Chip2/barcode26/9/sequential_summary.csv, results/Chip2/barcode28/0/sequential_summary.csv, results/Chip2/barcode28/1/sequential_summary.csv, results/Chip2/barcode28/2/sequential_summary.csv, results/Chip2/barcode28/3/sequential_summary.csv, results/Chip2/barcode28/4/sequential_summary.csv, results/Chip2/barcode28/5/sequential_summary.csv, results/Chip2/barcode28/6/sequential_summary.csv, results/Chip2/barcode28/7/sequential_summary.csv, results/Chip2/barcode28/8/sequential_summary.csv, results/Chip2/barcode28/9/sequential_summary.csv, results/Chip1/barcode30/0/non_sequential_summary.csv, results/Chip1/barcode30/1/non_sequential_summary.csv, results/Chip1/barcode30/2/non_sequential_summary.csv, results/Chip1/barcode30/3/non_sequential_summary.csv, results/Chip1/barcode30/4/non_sequential_summary.csv, results/Chip1/barcode30/5/non_sequential_summary.csv, results/Chip1/barcode30/6/non_sequential_summary.csv, results/Chip1/barcode30/7/non_sequential_summary.csv, results/Chip1/barcode30/8/non_sequential_summary.csv, results/Chip1/barcode30/9/non_sequential_summary.csv, results/Chip1/barcode31/0/non_sequential_summary.csv, results/Chip1/barcode31/1/non_sequential_summary.csv, results/Chip1/barcode31/2/non_sequential_summary.csv, results/Chip1/barcode31/3/non_sequential_summary.csv, results/Chip1/barcode31/4/non_sequential_summary.csv, results/Chip1/barcode31/5/non_sequential_summary.csv, results/Chip1/barcode31/6/non_sequential_summary.csv, results/Chip1/barcode31/7/non_sequential_summary.csv, results/Chip1/barcode31/8/non_sequential_summary.csv, results/Chip1/barcode31/9/non_sequential_summary.csv, results/Chip1/barcode25/0/non_sequential_summary.csv, results/Chip1/barcode25/1/non_sequential_summary.csv, results/Chip1/barcode25/2/non_sequential_summary.csv, results/Chip1/barcode25/3/non_sequential_summary.csv, results/Chip1/barcode25/4/non_sequential_summary.csv, results/Chip1/barcode25/5/non_sequential_summary.csv, results/Chip1/barcode25/6/non_sequential_summary.csv, results/Chip1/barcode25/7/non_sequential_summary.csv, results/Chip1/barcode25/8/non_sequential_summary.csv, results/Chip1/barcode25/9/non_sequential_summary.csv, results/Chip2/barcode29/0/non_sequential_summary.csv, results/Chip2/barcode29/1/non_sequential_summary.csv, results/Chip2/barcode29/2/non_sequential_summary.csv, results/Chip2/barcode29/3/non_sequential_summary.csv, results/Chip2/barcode29/4/non_sequential_summary.csv, results/Chip2/barcode29/5/non_sequential_summary.csv, results/Chip2/barcode29/6/non_sequential_summary.csv, results/Chip2/barcode29/7/non_sequential_summary.csv, results/Chip2/barcode29/8/non_sequential_summary.csv, results/Chip2/barcode29/9/non_sequential_summary.csv, results/Chip2/barcode27/0/non_sequential_summary.csv, results/Chip2/barcode27/1/non_sequential_summary.csv, results/Chip2/barcode27/2/non_sequential_summary.csv, results/Chip2/barcode27/3/non_sequential_summary.csv, results/Chip2/barcode27/4/non_sequential_summary.csv, results/Chip2/barcode27/5/non_sequential_summary.csv, results/Chip2/barcode27/6/non_sequential_summary.csv, results/Chip2/barcode27/7/non_sequential_summary.csv, results/Chip2/barcode27/8/non_sequential_summary.csv, results/Chip2/barcode27/9/non_sequential_summary.csv, results/Chip2/barcode26/0/non_sequential_summary.csv, results/Chip2/barcode26/1/non_sequential_summary.csv, results/Chip2/barcode26/2/non_sequential_summary.csv, results/Chip2/barcode26/3/non_sequential_summary.csv, results/Chip2/barcode26/4/non_sequential_summary.csv, results/Chip2/barcode26/5/non_sequential_summary.csv, results/Chip2/barcode26/6/non_sequential_summary.csv, results/Chip2/barcode26/7/non_sequential_summary.csv, results/Chip2/barcode26/8/non_sequential_summary.csv, results/Chip2/barcode26/9/non_sequential_summary.csv, results/Chip2/barcode28/0/non_sequential_summary.csv, results/Chip2/barcode28/1/non_sequential_summary.csv, results/Chip2/barcode28/2/non_sequential_summary.csv, results/Chip2/barcode28/3/non_sequential_summary.csv, results/Chip2/barcode28/4/non_sequential_summary.csv, results/Chip2/barcode28/5/non_sequential_summary.csv, results/Chip2/barcode28/6/non_sequential_summary.csv, results/Chip2/barcode28/7/non_sequential_summary.csv, results/Chip2/barcode28/8/non_sequential_summary.csv, results/Chip2/barcode28/9/non_sequential_summary.csv, AGGRE/Chip1/barcode30/non_sequential_summary.csv, AGGRE/Chip1/barcode30/non_sequential_summary.csv, AGGRE/Chip1/barcode30/non_sequential_summary.csv, AGGRE/Chip1/barcode30/non_sequential_summary.csv, AGGRE/Chip1/barcode30/non_sequential_summary.csv, AGGRE/Chip1/barcode30/non_sequential_summary.csv, AGGRE/Chip1/barcode30/non_sequential_summary.csv, AGGRE/Chip1/barcode30/non_sequential_summary.csv, AGGRE/Chip1/barcode30/non_sequential_summary.csv, AGGRE/Chip1/barcode30/non_sequential_summary.csv, AGGRE/Chip1/barcode31/non_sequential_summary.csv, AGGRE/Chip1/barcode31/non_sequential_summary.csv, AGGRE/Chip1/barcode31/non_sequential_summary.csv, AGGRE/Chip1/barcode31/non_sequential_summary.csv, AGGRE/Chip1/barcode31/non_sequential_summary.csv, AGGRE/Chip1/barcode31/non_sequential_summary.csv, AGGRE/Chip1/barcode31/non_sequential_summary.csv, AGGRE/Chip1/barcode31/non_sequential_summary.csv, AGGRE/Chip1/barcode31/non_sequential_summary.csv, AGGRE/Chip1/barcode31/non_sequential_summary.csv, AGGRE/Chip1/barcode25/non_sequential_summary.csv, AGGRE/Chip1/barcode25/non_sequential_summary.csv, AGGRE/Chip1/barcode25/non_sequential_summary.csv, AGGRE/Chip1/barcode25/non_sequential_summary.csv, AGGRE/Chip1/barcode25/non_sequential_summary.csv, AGGRE/Chip1/barcode25/non_sequential_summary.csv, AGGRE/Chip1/barcode25/non_sequential_summary.csv, AGGRE/Chip1/barcode25/non_sequential_summary.csv, AGGRE/Chip1/barcode25/non_sequential_summary.csv, AGGRE/Chip1/barcode25/non_sequential_summary.csv, AGGRE/Chip2/barcode29/non_sequential_summary.csv, AGGRE/Chip2/barcode29/non_sequential_summary.csv, AGGRE/Chip2/barcode29/non_sequential_summary.csv, AGGRE/Chip2/barcode29/non_sequential_summary.csv, AGGRE/Chip2/barcode29/non_sequential_summary.csv, AGGRE/Chip2/barcode29/non_sequential_summary.csv, AGGRE/Chip2/barcode29/non_sequential_summary.csv, AGGRE/Chip2/barcode29/non_sequential_summary.csv, AGGRE/Chip2/barcode29/non_sequential_summary.csv, AGGRE/Chip2/barcode29/non_sequential_summary.csv, AGGRE/Chip2/barcode27/non_sequential_summary.csv, AGGRE/Chip2/barcode27/non_sequential_summary.csv, AGGRE/Chip2/barcode27/non_sequential_summary.csv, AGGRE/Chip2/barcode27/non_sequential_summary.csv, AGGRE/Chip2/barcode27/non_sequential_summary.csv, AGGRE/Chip2/barcode27/non_sequential_summary.csv, AGGRE/Chip2/barcode27/non_sequential_summary.csv, AGGRE/Chip2/barcode27/non_sequential_summary.csv, AGGRE/Chip2/barcode27/non_sequential_summary.csv, AGGRE/Chip2/barcode27/non_sequential_summary.csv, AGGRE/Chip2/barcode26/non_sequential_summary.csv, AGGRE/Chip2/barcode26/non_sequential_summary.csv, AGGRE/Chip2/barcode26/non_sequential_summary.csv, AGGRE/Chip2/barcode26/non_sequential_summary.csv, AGGRE/Chip2/barcode26/non_sequential_summary.csv, AGGRE/Chip2/barcode26/non_sequential_summary.csv, AGGRE/Chip2/barcode26/non_sequential_summary.csv, AGGRE/Chip2/barcode26/non_sequential_summary.csv, AGGRE/Chip2/barcode26/non_sequential_summary.csv, AGGRE/Chip2/barcode26/non_sequential_summary.csv, AGGRE/Chip2/barcode28/non_sequential_summary.csv, AGGRE/Chip2/barcode28/non_sequential_summary.csv, AGGRE/Chip2/barcode28/non_sequential_summary.csv, AGGRE/Chip2/barcode28/non_sequential_summary.csv, AGGRE/Chip2/barcode28/non_sequential_summary.csv, AGGRE/Chip2/barcode28/non_sequential_summary.csv, AGGRE/Chip2/barcode28/non_sequential_summary.csv, AGGRE/Chip2/barcode28/non_sequential_summary.csv, AGGRE/Chip2/barcode28/non_sequential_summary.csv, AGGRE/Chip2/barcode28/non_sequential_summary.csv, AGGRE/Chip1/barcode30/sequential_summary.csv, AGGRE/Chip1/barcode30/sequential_summary.csv, AGGRE/Chip1/barcode30/sequential_summary.csv, AGGRE/Chip1/barcode30/sequential_summary.csv, AGGRE/Chip1/barcode30/sequential_summary.csv, AGGRE/Chip1/barcode30/sequential_summary.csv, AGGRE/Chip1/barcode30/sequential_summary.csv, AGGRE/Chip1/barcode30/sequential_summary.csv, AGGRE/Chip1/barcode30/sequential_summary.csv, AGGRE/Chip1/barcode30/sequential_summary.csv, AGGRE/Chip1/barcode31/sequential_summary.csv, AGGRE/Chip1/barcode31/sequential_summary.csv, AGGRE/Chip1/barcode31/sequential_summary.csv, AGGRE/Chip1/barcode31/sequential_summary.csv, AGGRE/Chip1/barcode31/sequential_summary.csv, AGGRE/Chip1/barcode31/sequential_summary.csv, AGGRE/Chip1/barcode31/sequential_summary.csv, AGGRE/Chip1/barcode31/sequential_summary.csv, AGGRE/Chip1/barcode31/sequential_summary.csv, AGGRE/Chip1/barcode31/sequential_summary.csv, AGGRE/Chip1/barcode25/sequential_summary.csv, AGGRE/Chip1/barcode25/sequential_summary.csv, AGGRE/Chip1/barcode25/sequential_summary.csv, AGGRE/Chip1/barcode25/sequential_summary.csv, AGGRE/Chip1/barcode25/sequential_summary.csv, AGGRE/Chip1/barcode25/sequential_summary.csv, AGGRE/Chip1/barcode25/sequential_summary.csv, AGGRE/Chip1/barcode25/sequential_summary.csv, AGGRE/Chip1/barcode25/sequential_summary.csv, AGGRE/Chip1/barcode25/sequential_summary.csv, AGGRE/Chip2/barcode29/sequential_summary.csv, AGGRE/Chip2/barcode29/sequential_summary.csv, AGGRE/Chip2/barcode29/sequential_summary.csv, AGGRE/Chip2/barcode29/sequential_summary.csv, AGGRE/Chip2/barcode29/sequential_summary.csv, AGGRE/Chip2/barcode29/sequential_summary.csv, AGGRE/Chip2/barcode29/sequential_summary.csv, AGGRE/Chip2/barcode29/sequential_summary.csv, AGGRE/Chip2/barcode29/sequential_summary.csv, AGGRE/Chip2/barcode29/sequential_summary.csv, AGGRE/Chip2/barcode27/sequential_summary.csv, AGGRE/Chip2/barcode27/sequential_summary.csv, AGGRE/Chip2/barcode27/sequential_summary.csv, AGGRE/Chip2/barcode27/sequential_summary.csv, AGGRE/Chip2/barcode27/sequential_summary.csv, AGGRE/Chip2/barcode27/sequential_summary.csv, AGGRE/Chip2/barcode27/sequential_summary.csv, AGGRE/Chip2/barcode27/sequential_summary.csv, AGGRE/Chip2/barcode27/sequential_summary.csv, AGGRE/Chip2/barcode27/sequential_summary.csv, AGGRE/Chip2/barcode26/sequential_summary.csv, AGGRE/Chip2/barcode26/sequential_summary.csv, AGGRE/Chip2/barcode26/sequential_summary.csv, AGGRE/Chip2/barcode26/sequential_summary.csv, AGGRE/Chip2/barcode26/sequential_summary.csv, AGGRE/Chip2/barcode26/sequential_summary.csv, AGGRE/Chip2/barcode26/sequential_summary.csv, AGGRE/Chip2/barcode26/sequential_summary.csv, AGGRE/Chip2/barcode26/sequential_summary.csv, AGGRE/Chip2/barcode26/sequential_summary.csv, AGGRE/Chip2/barcode28/sequential_summary.csv, AGGRE/Chip2/barcode28/sequential_summary.csv, AGGRE/Chip2/barcode28/sequential_summary.csv, AGGRE/Chip2/barcode28/sequential_summary.csv, AGGRE/Chip2/barcode28/sequential_summary.csv, AGGRE/Chip2/barcode28/sequential_summary.csv, AGGRE/Chip2/barcode28/sequential_summary.csv, AGGRE/Chip2/barcode28/sequential_summary.csv, AGGRE/Chip2/barcode28/sequential_summary.csv, AGGRE/Chip2/barcode28/sequential_summary.csv
+    jobid: 0
+
+[Tue Apr 22 16:01:01 2025]
+Finished job 0.
+8 of 8 steps (100%) done
+Complete log: /data/Analysis/2025-04-15_HT27-2025-04-11_Run1/.snakemake/log/2025-04-22T160100.682345.snakemake.log
+unlocking
+removing lock
+removing lock
+removed all locks

@@ -1,0 +1,11 @@
+Full Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/snakemake/__init__.py", line 479, in snakemake
+    workflow.include(
+  File "/usr/lib/python3/dist-packages/snakemake/workflow.py", line 926, in include
+    exec(compile(code, snakefile, "exec"), self.globals)
+  File "/data/Analysis/2025-04-15_HT27-2025-04-11_Run1/snakefile", line 219, in <module>
+TypeError: 'function' object is not subscriptable
+
+TypeError in line 160 of /data/Analysis/2025-04-15_HT27-2025-04-11_Run1/snakefile:
+'function' object is not subscriptable
+  File "/data/Analysis/2025-04-15_HT27-2025-04-11_Run1/snakefile", line 160, in <module>

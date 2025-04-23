@@ -1,0 +1,31 @@
+Full Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/snakemake/__init__.py", line 479, in snakemake
+    workflow.include(
+  File "/usr/lib/python3/dist-packages/snakemake/workflow.py", line 911, in include
+    code, linemap, rulecount = parse(
+  File "/usr/lib/python3/dist-packages/snakemake/parser.py", line 818, in parse
+    for t, orig_token in automaton.consume():
+  File "/usr/lib/python3/dist-packages/snakemake/parser.py", line 105, in consume
+    for t, orig in self.state(token):
+  File "/usr/lib/python3/dist-packages/snakemake/parser.py", line 761, in python
+    for t in self.subautomaton(token.string).consume():
+  File "/usr/lib/python3/dist-packages/snakemake/parser.py", line 105, in consume
+    for t, orig in self.state(token):
+  File "/usr/lib/python3/dist-packages/snakemake/parser.py", line 177, in block
+    for t in self.block_content(token):
+  File "/usr/lib/python3/dist-packages/snakemake/parser.py", line 683, in block_content
+    for t in self.subautomaton(
+  File "/usr/lib/python3/dist-packages/snakemake/parser.py", line 102, in consume
+    for token in self.snakefile:
+  File "/usr/lib/python3/dist-packages/snakemake/parser.py", line 791, in __next__
+    return next(self.tokens)
+  File "/usr/lib/python3.8/tokenize.py", line 512, in _tokenize
+    raise IndentationError(
+  File "<tokenize>", line 161
+    output:
+    ^
+IndentationError: unindent does not match any outer indentation level
+
+IndentationError in line 161 of <tokenize>:
+unindent does not match any outer indentation level (<tokenize>, line 161)
+  File "/usr/lib/python3.8/tokenize.py", line 512, in _tokenize

@@ -5,7 +5,7 @@ location: "/data/data-transfer_KCRB/2025-04-15_HT27-2025-04-11_Run1"
 
 #sample prep
 prep:
-  nsample: 10000
+  nsample: 100
   nblocks: 10
 
 #Runs to analyze

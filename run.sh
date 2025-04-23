@@ -1,5 +1,5 @@
 #!/bin/bash
 
-#Change NCORES depending on workload and resources
-snakemake -s snakefile --cores 80 --printshellcmds --verbose --keep-going --use-conda
+#Change NCORES (default = 40) depending on workload and resources
+snakemake -s snakefile --cores 40 --printshellcmds --verbose --keep-going --use-conda
 

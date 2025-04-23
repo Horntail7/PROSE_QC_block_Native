@@ -96,16 +96,17 @@ def process_reads(reads, templates, min_length, max_length, score_cut_off):
     substitution_matrix = create_substitution_matrix()
     non_sequential_summary = {key: 0 for key in templates}
     sequential_summary = {key: 0 for key in templates}
-    non_sequential_summary["reads_not_meeting_length_criteria"] = 0
-    sequential_summary["reads_not_meeting_length_criteria"] = 0
+    sequential_summary["Total"] = 0
+    non_sequential_summary["Reads_unmatched"] = 0
+    non_sequential_summary["Reads_not_meeting_length_criteria"] = 0
     aligned_reads = []
     inserts = []
     count = 0
     for read in reads:
+        sequential_summary["Total"] += 1
         sequence = str(read.seq)
         if not (min_length <= len(sequence) <= max_length):
-            non_sequential_summary["reads_not_meeting_length_criteria"] += 1
-            sequential_summary["reads_not_meeting_length_criteria"] += 1
+            non_sequential_summary["Reads_not_meeting_length_criteria"] += 1
             continue
 
         matched = False
@@ -117,8 +118,8 @@ def process_reads(reads, templates, min_length, max_length, score_cut_off):
                 matched = True
 
         if not matched:
-            non_sequential_summary["reads_not_meeting_length_criteria"] += 1
-            sequential_summary["reads_not_meeting_length_criteria"] += 1
+            non_sequential_summary["Reads_unmatched"] += 1
+
 
         flag = 1
         starts=[0]
@@ -179,17 +180,17 @@ def main():
 
     non_sequential_csv_name=os.path.join(args.od,"non_sequential_summary.csv")    
     write_summary_to_csv(non_sequential_csv_name, non_sequential_summary, total_reads)
-    print(f"Non-sequential results written to {non_sequential_csv_name}")
+#    print(f"Non-sequential results written to {non_sequential_csv_name}")
     
     sequential_csv_name=os.path.join(args.od,"sequential_summary.csv")    
     write_summary_to_csv(sequential_csv_name, sequential_summary, total_reads)
-    print(f"Sequential results written to {sequential_csv_name}")
+#    print(f"Sequential results written to {sequential_csv_name}")
 
     # Always create the aligned FASTQ.GZ file, even if empty
     aligned_file_name=os.path.join(args.od,"aligned.fastq.gz")
     with gzip.open(aligned_file_name, "wt") as aligned_file:
         SeqIO.write(aligned_reads, aligned_file, "fastq")
-    print(f"Aligned reads (including potentially empty file) written to {aligned_file_name}")
+#    print(f"Aligned reads (including potentially empty file) written to {aligned_file_name}")
 
     outname = os.path.join(args.od,"inserts.out")
     outfile = open(outname, "wt")
