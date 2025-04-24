@@ -17,7 +17,12 @@ for chip in CHIP_DIRS:
     chip_dir=f"{datadir}/{chip}"
     subfolder = next(os.path.join(chip_dir, d) for d in os.listdir(chip_dir) if os.path.isdir(os.path.join(chip_dir, d)))
     fastq_dir = os.path.join(subfolder, "fastq_pass")
-    NATIVE_DIRS[chip] = [name for name in os.listdir(fastq_dir) if os.path.isdir(os.path.join(fastq_dir, name)) and 'barcode' in name]
+    NATIVE_DIRS[chip] = [
+    name for name in os.listdir(fastq_dir)
+    if os.path.isdir(os.path.join(fastq_dir, name))
+    and 'barcode' in name
+    and os.listdir(os.path.join(fastq_dir, name))  # ensures the directory is not empty
+    ]
 
 
 chip_native_pairs = [
