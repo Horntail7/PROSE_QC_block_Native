@@ -29,16 +29,16 @@ do
 
 	
 	cat $Fwd/$chip/$barcode/inserts_Rev.out $Rev/$chip/$barcode/inserts.out > $dir/Combined/$chip/$barcode/inserts.out
-	python3 /data/Scripts/score_inserts-bulk.py --inp inserts.out --ncol 4 --icol 2
+	python3 $dir/Scripts/score_inserts-bulk.py --inp inserts.out --ncol 4 --icol 2
 	
-	numis=`python3 /data/Scripts/inserts_to_per_template.py --inp inserts.out --ncol 4 --icol 2 --pcol 1 --acol 3 --bcol 4 --spol Rev --ncut 10`
+	numis=`python3 $dir/Scripts/inserts_to_per_template.py --inp inserts.out --ncol 4 --icol 2 --pcol 1 --acol 3 --bcol 4 --spol Rev --ncut 10`
 	
 	echo $chip $barcode $numis
 
 	if [ -f inserts_per_template.out ]
 	then
 
-	    python3 /data/Scripts/score_inserts.py --inp inserts_per_template.out
+	    python3 $dir/Scripts/score_inserts.py --inp inserts_per_template.out
 	    
 	fi
 	
