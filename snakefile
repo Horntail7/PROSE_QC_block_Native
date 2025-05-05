@@ -21,7 +21,7 @@ for chip in CHIP_DIRS:
     name for name in os.listdir(fastq_dir)
     if os.path.isdir(os.path.join(fastq_dir, name))
     and 'barcode' in name
-    and os.listdir(os.path.join(fastq_dir, name))  # ensures the directory is not empty
+    and len(os.listdir(os.path.join(fastq_dir, name))) >= config["prep"]["nblocks"]  # ensures the directory is not empty
     ]
 
 
@@ -112,18 +112,28 @@ rule create_blocks:
         nsample=config["prep"]["nsample"],
         nblocks=config["prep"]["nblocks"],
         datadir=config["location"]
-    shell:
-        """
-        realpath {params.datadir}/{wildcards.chip}/*/fastq_pass/{wildcards.native}/*.fastq.gz > {output}.tmp
-        head -n {params.nsample} {output}.tmp > {output}.temp
+    resources:
+        mem_mb=4000
+    run:
+        import os
+        import glob
 
-        nfiles=$(wc -l < {output}.temp)
-        nfiles_per_block=$((nfiles / {params.nblocks}))
-        nhead=$((nfiles_per_block * ({wildcards.block}+1)))
+        pattern = os.path.join(params.datadir, wildcards.chip, "*", "fastq_pass", wildcards.native, "*.fastq.gz")
+        files = sorted(glob.glob(pattern))
 
-        head -n $nhead {output}.temp | tail -n $nfiles_per_block > {output}
-        rm -f {output}.temp {output}.tmp
-        """
+        files = files[:params.nsample]
+
+        nfiles = len(files)
+        nfiles_per_block = nfiles // params.nblocks
+
+        block = int(wildcards.block)
+        start = block * nfiles_per_block
+        end = start + nfiles_per_block
+
+        selected_files = files[start:end]
+
+        with open(output[0], "w") as out_f:
+            out_f.write("\n".join(os.path.realpath(f) for f in selected_files))
 
 
 # Rule to merge the FASTQ files
@@ -132,6 +142,8 @@ rule merge_fastq:
         "results/{chip}/{native}/{block}/fastq_files.lst"
     output:
         "results/{chip}/{native}/{block}/merged.fastq.gz"
+    resources:
+        mem_mb=4000
     shell:
         """
         for f in `cat {input}`; do
@@ -154,6 +166,8 @@ rule align:
     params:
         output_dir="results/{chip}/{native}/{block}",
 	cut_off=config["alignment"]["cutoff"]
+    resources:
+        mem_mb=4000
     shell:
         """
         python3 {input.script} --iq {input.fastq} --ia {input.Templates} --od {params.output_dir} --score_cut_off {params.cut_off} 
@@ -217,6 +231,8 @@ rule aggregate_data_summary:
     	templates=config["alignment"]["reference"],
     	nblocks=config["prep"]["nblocks"],
     	datadir=config["location"]
+    resources:
+        mem_mb=4000
     shell:
         """
     	echo "Seq,Read_count,Percentage" > {output.Aggregate_non_sequential_summary}
