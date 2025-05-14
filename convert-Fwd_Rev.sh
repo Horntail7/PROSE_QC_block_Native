@@ -3,10 +3,10 @@
 dir=`pwd`
 Fwd=$dir/T3_5-Fwd
 
-for chip in `ls $dir | grep Chip`
+for chip in `ls $Fwd | grep Chip`
 do
 
-    for barcode in `ls $dir/$chip | grep barcode`
+    for barcode in `ls $Fwd/$chip | grep barcode`
     do
 
 	cd $Fwd/$chip/$barcode
